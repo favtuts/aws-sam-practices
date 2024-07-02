@@ -1,3 +1,45 @@
+# RESTful API
+
+In this advanced example, a separate `AWS::Serverless::Api` resource named `MyApi` is defined, which allows for more detailed API Gateway configuration. The `HelloWorldFunction` then references this API resource using the `RestApiId` property.
+
+
+Package the Application
+```
+$ sam package --output-template-file restfulapi-packaged.yaml --s3-bucket tvt-artifacts-bucket --profile tvt_admin
+
+        Uploading to c6ce8fa8b5a97dd022ecd006536eb5a4  847 / 847  (100.00%)
+
+Successfully packaged artifacts and wrote output template to file restfulapi-packaged.yaml.
+Execute the following command to deploy the packaged template
+sam deploy --template-file /home/tvt/techspace/aws/sam/aws-sam-practices/restfulapi-app/restfulapi-packaged.yaml --stack-name <YOUR STACK NAME>
+```
+
+Deploy the Application
+```bash
+$ sm deploy --template-file restfulapi-packaged.yaml --stack-name restfulapi-stack --capabilities CAPABILITY_IAM --profile tvt_admin
+
+loudFormation outputs from deployed stack
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Outputs                                                                                                                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Key                 HelloWorldFunctionIamRole                                                                                                                                
+Description         Implicit IAM Role created for Hello World function                                                                                                       
+Value               arn:aws:iam::475797023758:role/restfulapi-stack-HelloWorldFunctionRole-qvhusYzUia4s                                                                      
+
+Key                 HelloWorldApi                                                                                                                                            
+Description         API Gateway endpoint URL for Prod stage for Hello World function                                                                                         
+Value               https://8yprixvl9f.execute-api.us-east-1.amazonaws.com/Prod/hello/                                                                                       
+
+Key                 HelloWorldFunction                                                                                                                                       
+Description         Hello World Lambda Function ARN                                                                                                                          
+Value               arn:aws:lambda:us-east-1:475797023758:function:restfulapi-stack-HelloWorldFunction-ImvcaUnGYcmZ                                                          
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Successfully created/updated stack - restfulapi-stack in us-east-1
+```
+
+
 # restfulapi-app
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
