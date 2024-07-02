@@ -25,7 +25,7 @@ Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://tvt-artifacts-bucket/c6ce8fa8b5a97dd022ecd006536eb5a4
+      CodeUri: s3://tvt-artifacts-bucket/44cebbc6d696d8f1c2fd63aa59e45908
       Handler: app.lambda_handler
       Runtime: python3.9
       Architectures:

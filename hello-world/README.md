@@ -169,6 +169,18 @@ Successfully created/updated stack - hello-world-stack in us-east-1
 ```
 
 
+Delete deployment
+```
+$ sam delete --stack-name "hello-world-stack" --profile tvt_admin
+        Are you sure you want to delete the stack hello-world-stack in the region us-east-1 ? [y/N]: y
+        Are you sure you want to delete the folder hello-world-stack in S3 which contains the artifacts? [y/N]: y
+        - Deleting S3 object with key hello-world-stack/44cebbc6d696d8f1c2fd63aa59e45908
+        - Deleting S3 object with key hello-world-stack/ced2f1a78d3653cde973192eef106eaa.template
+        - Deleting Cloudformation stack hello-world-stack
+
+Deleted successfully
+```
+
 # hello-world
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.

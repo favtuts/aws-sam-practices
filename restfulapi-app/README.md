@@ -2,9 +2,12 @@
 
 In this advanced example, a separate `AWS::Serverless::Api` resource named `MyApi` is defined, which allows for more detailed API Gateway configuration. The `HelloWorldFunction` then references this API resource using the `RestApiId` property.
 
+```
+# sam build --use-container
+```
 
 Package the Application
-```
+```bash
 $ sam package --output-template-file restfulapi-packaged.yaml --s3-bucket tvt-artifacts-bucket --profile tvt_admin
 
         Uploading to c6ce8fa8b5a97dd022ecd006536eb5a4  847 / 847  (100.00%)
@@ -16,27 +19,47 @@ sam deploy --template-file /home/tvt/techspace/aws/sam/aws-sam-practices/restful
 
 Deploy the Application
 ```bash
-$ sm deploy --template-file restfulapi-packaged.yaml --stack-name restfulapi-stack --capabilities CAPABILITY_IAM --profile tvt_admin
+$ sam deploy --template-file restfulapi-packaged.yaml --s3-bucket tvt-artifacts-bucket --stack-name restfulapi-stack --capabilities CAPABILITY_IAM --profile tvt_admin
 
-loudFormation outputs from deployed stack
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Outputs                                                                                                                                                                      
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Key                 HelloWorldFunctionIamRole                                                                                                                                
-Description         Implicit IAM Role created for Hello World function                                                                                                       
-Value               arn:aws:iam::475797023758:role/restfulapi-stack-HelloWorldFunctionRole-qvhusYzUia4s                                                                      
+CloudFormation outputs from deployed stack
+-----------------------------------------------------------------------------------------------------------
+Outputs
+-----------------------------------------------------------------------------------------------------------
+Key                 HelloWorldFunctionIamRole
+Description         Implicit IAM Role created for Hello World function
+Value               arn:aws:iam::475797023758:role/restfulapi-stack-HelloWorldFunctionRole-Fs2ueCM7e8XL
 
-Key                 HelloWorldApi                                                                                                                                            
-Description         API Gateway endpoint URL for Prod stage for Hello World function                                                                                         
-Value               https://8yprixvl9f.execute-api.us-east-1.amazonaws.com/Prod/hello/                                                                                       
+Key                 HelloWorldApi
+Description         API Gateway endpoint URL for Prod stage for Hello World function
+Value               https://xu0kicv197.execute-api.us-east-1.amazonaws.com/Prod/hello/
 
-Key                 HelloWorldFunction                                                                                                                                       
-Description         Hello World Lambda Function ARN                                                                                                                          
-Value               arn:aws:lambda:us-east-1:475797023758:function:restfulapi-stack-HelloWorldFunction-ImvcaUnGYcmZ                                                          
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Key                 HelloWorldFunction
+Description         Hello World Lambda Function ARN
+Value               arn:aws:lambda:us-east-1:475797023758:function:restfulapi-stack-HelloWorldFunction-
+zyOP7k5KmDad
+-----------------------------------------------------------------------------------------------------------
 
 
 Successfully created/updated stack - restfulapi-stack in us-east-1
+```
+
+
+Delete deployment
+```bash
+$ sam delete --stack-name "restfulapi-stack" --profile tvt_admin
+        Are you sure you want to delete the stack hello-world-stack in the region us-east-1 ? [y/N]: y
+        Are you sure you want to delete the folder hello-world-stack in S3 which contains the artifacts? [y/N]: y
+        - Deleting S3 object with key hello-world-stack/44cebbc6d696d8f1c2fd63aa59e45908
+        - Deleting S3 object with key hello-world-stack/ced2f1a78d3653cde973192eef106eaa.template
+        - Deleting Cloudformation stack hello-world-stack
+
+Deleted successfully
+```
+
+
+Testing locally by event
+```bash
+$ sam local invoke HelloWorldFunction --event events/event.json
 ```
 
 
