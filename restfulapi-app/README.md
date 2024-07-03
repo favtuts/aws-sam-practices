@@ -1,4 +1,6 @@
 # RESTful API
+* https://tuts.heomi.net/a-practical-introduction-to-aws-sam-a-comprehensive-guide-for-cloud-engineers/
+
 
 In this advanced example, a separate `AWS::Serverless::Api` resource named `MyApi` is defined, which allows for more detailed API Gateway configuration. The `HelloWorldFunction` then references this API resource using the `RestApiId` property.
 

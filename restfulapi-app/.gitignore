@@ -247,3 +247,6 @@ $RECYCLE.BIN/
 # Cache folder
 
 */cache/*
+
+# SAM default build folder
+.aws-sam/

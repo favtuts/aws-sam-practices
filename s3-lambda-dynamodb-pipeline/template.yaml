@@ -5,41 +5,137 @@ Description: >
 
   Sample SAM Template for s3-lambda-dynamodb-pipeline
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
     MemorySize: 128
-
-    # You can add LoggingConfig parameters such as the Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel. Learn more here https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
     LoggingConfig:
-      LogFormat: JSON      
+      LogFormat: JSON
+  
 Resources:
-  HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  S3Bucket:
+    Type: AWS::S3::Bucket
     Properties:
-      CodeUri: hello_world/
+      BucketName: !Sub '${AWS::StackName}-bucket'
+
+  ProcessDataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: process_data/
       Handler: app.lambda_handler
       Runtime: python3.9
-      Architectures:
-      - x86_64
-      Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /hello
-            Method: get
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref DynamoDBTable
+        - Statement:
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+            Resource: !Sub 'arn:aws:s3:::${S3Bucket}/*'
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DynamoDBTable
+
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${AWS::StackName}-table'
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt ProcessDataFunction.Arn
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub 'arn:aws:s3:::${S3Bucket}'
+
+  CustomS3Notification:
+    Type: Custom::S3Notification
+    DependsOn: LambdaInvokePermission
+    Properties:
+      ServiceToken: !GetAtt CustomS3NotificationFunction.Arn
+      BucketName: !Ref S3Bucket
+      LambdaFunctionArn: !GetAtt ProcessDataFunction.Arn
+
+  CustomS3NotificationFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Runtime: python3.12
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+
+          s3 = boto3.client('s3')
+
+          def handler(event, context):
+              try:
+                  if event['RequestType'] == 'Create':
+                      bucket_name = event['ResourceProperties']['BucketName']
+                      lambda_function_arn = event['ResourceProperties']['LambdaFunctionArn']
+                      response = s3.put_bucket_notification_configuration(
+                          Bucket=bucket_name,
+                          NotificationConfiguration={
+                              'LambdaFunctionConfigurations': [
+                                  {
+                                      'Events': ['s3:ObjectCreated:*'],
+                                      'LambdaFunctionArn': lambda_function_arn
+                                  }
+                              ]
+                          }
+                      )
+                  cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+              except Exception as e:
+                  print(f'Error: {e}')
+                  cfnresponse.send(event, context, cfnresponse.FAILED, {'Message': str(e)})
+
+      Role: !GetAtt CustomS3NotificationFunctionRole.Arn
+
+  CustomS3NotificationFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CustomS3NotificationPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutBucketNotification
+                Resource: !Sub 'arn:aws:s3:::${S3Bucket}'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
 
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: API Gateway endpoint URL for Prod stage for Hello World function
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: Hello World Lambda Function ARN
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: Implicit IAM Role created for Hello World function
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  S3BucketName:
+    Description: Name of the S3 bucket
+    Value: !Ref S3Bucket
+  LambdaFunction:
+    Description: ARN of the Lambda function
+    Value: !GetAtt ProcessDataFunction.Arn
+  DynamoDBTableName:
+    Description: Name of the DynamoDB table
+    Value: !Ref DynamoDBTable

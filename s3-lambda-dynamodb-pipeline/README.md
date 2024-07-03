@@ -1,3 +1,201 @@
+# DATA PROCESSING PIPELINE
+* https://tuts.heomi.net/a-practical-introduction-to-aws-sam-a-comprehensive-guide-for-cloud-engineers/
+
+
+## Build the Application
+```bash
+$ sam build
+Starting Build use cache
+Manifest file is changed (new hash: 3298f13049d19cffaa37ca931dd4d421) or dependency folder (.aws-sam/deps/56913e5e-8f42-4d23-985b-c54e4b25ab94)
+is missing for (ProcessDataFunction), downloading dependencies and copying/building source
+Building codeuri: /home/tvt/techspace/aws/sam/aws-sam-practices/s3-lambda-dynamodb-pipeline/process_data runtime: python3.9 metadata: {}
+architecture: x86_64 functions: ProcessDataFunction
+ Running PythonPipBuilder:CleanUp
+ Running PythonPipBuilder:ResolveDependencies
+ Running PythonPipBuilder:CopySource
+ Running PythonPipBuilder:CopySource
+
+Build Succeeded
+
+Built Artifacts  : .aws-sam/build
+Built Template   : .aws-sam/build/template.yaml
+
+Commands you can use next
+=========================
+[*] Validate SAM template: sam validate
+[*] Invoke Function: sam local invoke
+[*] Test Function in the Cloud: sam sync --stack-name {{stack-name}} --watch
+[*] Deploy: sam deploy --guided
+```
+
+## Deploy the Application
+```bash
+$ sam deploy --guided --profile tvt_admin
+
+Configuring SAM deploy
+======================
+
+        Looking for config file [samconfig.toml] :  Found
+        Reading default arguments  :  Success
+
+        Setting default arguments for 'sam deploy'
+        =========================================
+        Stack Name [s3-lambda-dynamodb-pipeline]:
+        AWS Region [us-east-1]:
+        #Shows you resources changes to be deployed and require a 'Y' to initiate deploy
+        Confirm changes before deploy [Y/n]: y
+        #SAM needs permission to be able to create roles to connect to the resources in your template
+        Allow SAM CLI IAM role creation [Y/n]: y
+        #Preserves the state of previously provisioned resources when an operation fails
+        Disable rollback [y/N]: y
+        Save arguments to configuration file [Y/n]: y
+        SAM configuration file [samconfig.toml]:
+        SAM configuration environment [default]:
+
+        Looking for resources needed for deployment:
+
+        Managed S3 bucket: aws-sam-cli-managed-default-samclisourcebucket-qeasky7sjge6
+        A different default S3 bucket can be set in samconfig.toml and auto resolution of buckets turned off by setting resolve_s3=False
+
+        Parameter "stack_name=s3-lambda-dynamodb-pipeline" in [default.deploy.parameters] is defined as a global parameter
+[default.global.parameters].
+        This parameter will be only saved under [default.global.parameters] in
+/home/tvt/techspace/aws/sam/aws-sam-practices/s3-lambda-dynamodb-pipeline/samconfig.toml.
+
+        Saved arguments to config file
+        Running 'sam deploy' for future deployments will use the parameters saved above.
+        The above parameters can be changed by modifying samconfig.toml
+        Learn more about samconfig.toml syntax at
+        https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-config.html
+
+        Uploading to s3-lambda-dynamodb-pipeline/2b8af50e94fb7f7563fccda82ecf085e  560126 / 560126  (100.00%)
+
+        Deploying with following values
+        ===============================
+        Stack name                   : s3-lambda-dynamodb-pipeline
+        Region                       : us-east-1
+        Confirm changeset            : True
+        Disable rollback             : True
+        Deployment s3 bucket         : aws-sam-cli-managed-default-samclisourcebucket-qeasky7sjge6
+        Capabilities                 : ["CAPABILITY_IAM"]
+        Parameter overrides          : {}
+        Signing Profiles             : {}
+
+Initiating deployment
+=====================
+
+        Uploading to s3-lambda-dynamodb-pipeline/e710a0cb137e3dfb49a6634d72041b61.template  4889 / 4889  (100.00%)
+
+
+Waiting for changeset to be created..
+
+CloudFormation stack changeset
+---------------------------------------------------------------------------------------------------------------------------------------------
+Operation                           LogicalResourceId                   ResourceType                        Replacement
+---------------------------------------------------------------------------------------------------------------------------------------------
++ Add                               CustomS3NotificationFunctionRole    AWS::IAM::Role                      N/A
++ Add                               CustomS3NotificationFunction        AWS::Lambda::Function               N/A
++ Add                               CustomS3Notification                Custom::S3Notification              N/A
++ Add                               DynamoDBTable                       AWS::DynamoDB::Table                N/A
++ Add                               LambdaInvokePermission              AWS::Lambda::Permission             N/A
++ Add                               ProcessDataFunctionRole             AWS::IAM::Role                      N/A
++ Add                               ProcessDataFunction                 AWS::Lambda::Function               N/A
++ Add                               S3Bucket                            AWS::S3::Bucket                     N/A
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Changeset created successfully. arn:aws:cloudformation:us-east-1:475797023758:changeSet/samcli-deploy1719972057/de20831e-07b1-49e9-99c7-1dfb4b79b82f
+
+
+Previewing CloudFormation changeset before deployment
+======================================================
+Deploy this changeset? [y/N]: y
+
+2024-07-03 09:01:16 - Waiting for stack create/update to complete
+
+CloudFormation events from stack operations (refresh every 5.0 seconds)
+---------------------------------------------------------------------------------------------------------------------------------------------
+ResourceStatus                      ResourceType                        LogicalResourceId                   ResourceStatusReason
+---------------------------------------------------------------------------------------------------------------------------------------------
+CREATE_IN_PROGRESS                  AWS::CloudFormation::Stack          s3-lambda-dynamodb-pipeline         User Initiated
+CREATE_IN_PROGRESS                  AWS::S3::Bucket                     S3Bucket                            -
+CREATE_IN_PROGRESS                  AWS::DynamoDB::Table                DynamoDBTable                       -
+CREATE_IN_PROGRESS                  AWS::DynamoDB::Table                DynamoDBTable                       Resource creation Initiated
+CREATE_IN_PROGRESS                  AWS::S3::Bucket                     S3Bucket                            Resource creation Initiated
+CREATE_COMPLETE                     AWS::DynamoDB::Table                DynamoDBTable                       -
+CREATE_COMPLETE                     AWS::S3::Bucket                     S3Bucket                            -
+CREATE_IN_PROGRESS                  AWS::IAM::Role                      ProcessDataFunctionRole             -
+CREATE_IN_PROGRESS                  AWS::IAM::Role                      CustomS3NotificationFunctionRole    -
+CREATE_IN_PROGRESS                  AWS::IAM::Role                      CustomS3NotificationFunctionRole    Resource creation Initiated
+CREATE_IN_PROGRESS                  AWS::IAM::Role                      ProcessDataFunctionRole             Resource creation Initiated
+CREATE_COMPLETE                     AWS::IAM::Role                      CustomS3NotificationFunctionRole    -
+CREATE_COMPLETE                     AWS::IAM::Role                      ProcessDataFunctionRole             -
+CREATE_IN_PROGRESS                  AWS::Lambda::Function               CustomS3NotificationFunction        -
+CREATE_IN_PROGRESS                  AWS::Lambda::Function               ProcessDataFunction                 -
+CREATE_IN_PROGRESS                  AWS::Lambda::Function               CustomS3NotificationFunction        Resource creation Initiated
+CREATE_IN_PROGRESS                  AWS::Lambda::Function               CustomS3NotificationFunction        Eventual consistency check
+                                                                                                            initiated
+CREATE_IN_PROGRESS                  AWS::Lambda::Function               ProcessDataFunction                 Resource creation Initiated
+CREATE_IN_PROGRESS                  AWS::Lambda::Function               ProcessDataFunction                 Eventual consistency check
+                                                                                                            initiated
+CREATE_IN_PROGRESS                  AWS::Lambda::Permission             LambdaInvokePermission              -
+CREATE_IN_PROGRESS                  AWS::Lambda::Permission             LambdaInvokePermission              Resource creation Initiated
+CREATE_COMPLETE                     AWS::Lambda::Permission             LambdaInvokePermission              -
+CREATE_COMPLETE                     AWS::Lambda::Function               CustomS3NotificationFunction        -
+CREATE_COMPLETE                     AWS::Lambda::Function               ProcessDataFunction                 -
+CREATE_IN_PROGRESS                  Custom::S3Notification              CustomS3Notification                -
+CREATE_IN_PROGRESS                  Custom::S3Notification              CustomS3Notification                Resource creation Initiated
+CREATE_COMPLETE                     Custom::S3Notification              CustomS3Notification                -
+CREATE_COMPLETE                     AWS::CloudFormation::Stack          s3-lambda-dynamodb-pipeline         -
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+CloudFormation outputs from deployed stack
+---------------------------------------------------------------------------------------------------------------------------------------------
+Outputs
+---------------------------------------------------------------------------------------------------------------------------------------------
+Key                 DynamoDBTableName
+Description         Name of the DynamoDB table
+Value               s3-lambda-dynamodb-pipeline-table
+
+Key                 LambdaFunction
+Description         ARN of the Lambda function
+Value               arn:aws:lambda:us-east-1:475797023758:function:s3-lambda-dynamodb-pipeline-ProcessDataFunction-xHtenZVdoPsx
+
+Key                 S3BucketName
+Description         Name of the S3 bucket
+Value               s3-lambda-dynamodb-pipeline-bucket
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Successfully created/updated stack - s3-lambda-dynamodb-pipeline in us-east-1
+```
+
+
+## Test the Pipeline
+
+Create a sample `test.json` file and add the following content.
+```json
+{
+  "message": "This is a test message for the Lambda function inorder to test the data processing pipeline."
+}
+```
+
+Then upload a file to the S3 bucket
+```bash
+$ aws s3 cp test.json s3://s3-lambda-dynamodb-pipeline-bucket/ --profile tvt_admin
+upload: ./test.json to s3://s3-lambda-dynamodb-pipeline-bucket/test.json
+```
+
+Check the DynamoDB table to verify that the processed data has been stored.
+
+
+## Clean deployed stack
+
+```bash
+$ sam delete --stack-name "s3-lambda-dynamodb-pipeline"
+```
+
+
 # s3-lambda-dynamodb-pipeline
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
