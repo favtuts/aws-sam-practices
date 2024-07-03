@@ -198,3 +198,20 @@ Commands you can use next
 [*] Validate SAM template: cd s3-lambda-dynamodb-pipeline && sam validate
 [*] Test Function in the Cloud: cd s3-lambda-dynamodb-pipeline && sam sync --stack-name {stack-name} --watch
 ```
+
+# Real-Time Stream Processing
+
+
+Create a new directory for your project
+```bash
+mkdir kinesis-lambda-app
+cd kinesis-lambda-app
+touch template.yaml
+touch app.py
+```
+
+Build and Deploy the SAM Application
+```bash
+$ sam build
+$ sam deploy --guided
+```

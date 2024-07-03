@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Resources:
+  KinesisStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      ShardCount: 1
+
+  KinesisLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      CodeUri: .
+      Policies:
+        - AWSLambdaKinesisExecutionRole
+      Environment:
+        Variables:
+          STREAM_NAME: !Ref KinesisStream
+      Events:
+        KinesisEvent:
+          Type: Kinesis
+          Properties:
+            Stream: !GetAtt KinesisStream.Arn
+            StartingPosition: TRIM_HORIZON
+
+Outputs:
+  KinesisStreamName:
+    Description: Name of the Kinesis stream
+    Value: !Ref KinesisStream
+  LambdaFunction:
+    Description: ARN of the Lambda function
+    Value: !GetAtt KinesisLambdaFunction.Arn
