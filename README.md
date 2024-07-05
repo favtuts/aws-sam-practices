@@ -215,3 +215,7 @@ Build and Deploy the SAM Application
 $ sam build
 $ sam deploy --guided
 ```
+
+# Payment Processing
+
+* [Building A Payment Processing Workflow For A Fintech App Using AWS Step Functions and AWS SAM](./payment-processing/README.md)
