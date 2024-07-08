@@ -219,3 +219,8 @@ $ sam deploy --guided
 # Payment Processing
 
 * [Building A Payment Processing Workflow For A Fintech App Using AWS Step Functions and AWS SAM](./payment-processing/README.md)
+
+
+# API Gateway with Auth0
+
+* [API Gateway HTTP JWT Authoriser with OAuth2 (eg. Auth0)](/api-gateway-jwt-auth0/REAME.md)

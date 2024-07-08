@@ -388,3 +388,14 @@ $ curl -X POST https://2l56m7hpyd.execute-api.us-east-1.amazonaws.com/Prod/start
   "body": ""
 }
 ```
+
+Test invalid card without CVV or Card Number
+```bash
+$ curl -X POST https://2l56m7hpyd.execute-api.us-east-1.amazonaws.com/Prod/startPayment -d '{
+  "payment_details": {
+    "card_number": "4111111111111111",
+    "expiry_date": "12/24",    
+    "amount": 100.0
+  }
+}' -H "Content-Type: application/json"
+```
