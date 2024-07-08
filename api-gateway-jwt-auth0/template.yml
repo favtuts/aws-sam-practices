@@ -3,6 +3,19 @@ Transform: AWS::Serverless-2016-10-31
 
 Resources:
 
+  MyHttpApi:
+    Type: 'AWS::Serverless::HttpApi'
+    Properties:            
+      Auth:
+        DefaultAuthorizer: GeneralAuth
+        Authorizers:
+          GeneralAuth:            
+            IdentitySource: "$request.header.Authorization" 
+            JwtConfiguration:
+              issuer: "https://iot-dev.us.auth0.com/"
+              audience: 
+                - "https://auth0-jwt-authorizer"
+
   HelloFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -10,9 +23,21 @@ Resources:
       Runtime: nodejs20.x
       CodeUri: ./hello
       Events:
-        HelloAPI:
+        HelloAPI:          
           Type: HttpApi
           Properties:
+            ApiId: !Ref MyHttpApi
             Path: /hello
             Method: GET
+
+Outputs:
+  MyHttpApi:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${MyHttpApi}.execute-api.${AWS::Region}.amazonaws.com/hello/"
+  HelloFunction:
+    Description: Hello Lambda Function ARN
+    Value: !GetAtt HelloFunction.Arn
+  HelloFunctionIamRole:
+    Description: Implicit IAM Role created for Hello function
+    Value: !GetAtt HelloFunctionRole.Arn
 
