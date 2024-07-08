@@ -1,0 +1,11 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "api-gateway-jwt-auth0"
+resolve_s3 = true
+s3_prefix = "api-gateway-jwt-auth0"
+region = "us-east-1"
+profile = "tvt_admin"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+image_repositories = []
