@@ -35,7 +35,6 @@ You can download Sample:
 
 ![download_sample](./images/api-gateway-auth0-react-app-download-sample.png)
 
-
 Or you can View it on Github: https://github.com/auth0-samples/auth0-react-samples/tree/master/Sample-01
 
 Or you can follow this tutorial to create React App: https://react.dev/learn/start-a-new-react-project
@@ -45,7 +44,6 @@ Or you can clone it from the template: https://github.com/facebook/create-react-
 
 To run the sample, it recommends to use YARN tool:
 * https://linuxhint.com/install_yarn_ubuntu/
-
 
 
 ## Configure Callback URLs
@@ -64,6 +62,23 @@ You need to add the URL for your app to the `Allowed Web Origins` field in your 
 
 If you are following along with the sample project you downloaded from the top of this page, you should set the Allowed Web Origins to `http://localhost:3000`.
 
-# API Gateway using Custom Authorizers
-* https://auth0.com/docs/customize/integrations/aws/aws-api-gateway-custom-authorizers
+
+## Configure Audience
+
+Modify the config file: `apigateway-auth0-react-app/client/src/auth_config.json`
+```json
+{
+  "domain": "iot-dev.us.auth0.com",
+  "clientId": "cU4CrDLN8h9tAyad7W572chiwzeKZMbl",
+  "audience": "https://auth0-jwt-authorizer"
+}
+```
+The audience value we already done on `apigateway-auth0-jwt-authorizer`.
+
+
+# Run and Test the Auth0
+
+```
+$ yarn run dev
+```
 
