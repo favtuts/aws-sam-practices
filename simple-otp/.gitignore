@@ -1,0 +1,4 @@
+.vscode/*
+
+# SAM default build folder
+.aws-sam/
