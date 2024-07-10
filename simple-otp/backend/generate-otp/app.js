@@ -10,6 +10,12 @@ exports.lambdaHandler = async (event, context) => {
   if (!validator.validate(Body.email)) {
     return {
       statusCode: 422,
+      headers: {
+        'Content-Type': 'application/json', 
+        "Access-Control-Allow-Headers" : "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-requested-with",
+        "Access-Control-Allow-Origin": "*", // Allow from anywhere 
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE,PATCH" // Allow only GET request 
+      },
       body: JSON.stringify({
         message: "Required field email not found or invalid",
       }),
@@ -35,8 +41,10 @@ exports.lambdaHandler = async (event, context) => {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json', 
-        'Access-Control-Allow-Origin': '*'
-      },
+        "Access-Control-Allow-Headers" : "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-requested-with",
+        "Access-Control-Allow-Origin": "*", // Allow from anywhere 
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE,PATCH" // Allow only GET request 
+      },            
       body: JSON.stringify({
         message: "OTP generated",
         data: {
@@ -51,7 +59,9 @@ exports.lambdaHandler = async (event, context) => {
       statusCode: 500,
       headers: {
         'Content-Type': 'application/json', 
-        'Access-Control-Allow-Origin': '*'
+        "Access-Control-Allow-Headers" : "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-requested-with",
+        "Access-Control-Allow-Origin": "*", // Allow from anywhere 
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE,PATCH" // Allow only GET request 
       },
       body: JSON.stringify({
         message: "OTP generation failed",

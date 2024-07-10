@@ -28,10 +28,12 @@ Resources:
       StageName: 
         Ref: Stage
       Cors:
-        AllowMethods: "'OPTIONS,POST,GET'"
-        AllowHeaders: "'Content-Type'"
+        AllowMethods: "'OPTIONS,POST,GET,PUT,DELETE,PATCH'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-requested-with'"
         AllowOrigin: "'*'"
-
+      Auth:
+        AddDefaultAuthorizerToCorsPreflight: False
+                
   DynamodbTable:
     Type: AWS::DynamoDB::Table
     Properties:
